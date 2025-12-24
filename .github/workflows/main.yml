@@ -1,8 +1,7 @@
-# .github/workflows/build-python.yml
 name: Build Python for Windows
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:  # Allows manual trigger
   push:
     branches: [main]
 
@@ -25,18 +24,24 @@ jobs:
       
       - name: Build Python
         run: |
-          cd Python-3.10.16\PCbuild
-          build.bat -p x64 -c Release
+          cd Python-3.10.16/PCbuild
+          ./build.bat -p x64 -c Release
         shell: cmd
+      
+      - name: List build output
+        run: |
+          echo "Listing build directory contents:"
+          ls -R Python-3.10.16/PCbuild/
+        shell: bash
       
       - name: Package Build
         run: |
-          cd Python-3.10.16\PCbuild\amd64
-          tar -czf python-3.10.16-windows-x64.tar.gz *
-        shell: bash
+          cd Python-3.10.16/PCbuild/amd64
+          Compress-Archive -Path * -DestinationPath ../../../python-3.10.16-windows-x64.zip
+        shell: pwsh
       
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: python-windows-build
-          path: Python-3.10.16/PCbuild/amd64/python-3.10.16-windows-x64.tar.gz
+          path: python-3.10.16-windows-x64.zip
