@@ -1,0 +1,42 @@
+# .github/workflows/build-python.yml
+name: Build Python for Windows
+
+on:
+  workflow_dispatch:  # Manual trigger
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+      
+      - name: Download Python Source
+        run: |
+          curl -L -O https://www.python.org/ftp/python/3.10.16/Python-3.10.16.tgz
+          tar -xzf Python-3.10.16.tgz
+        shell: bash
+      
+      - name: Build Python
+        run: |
+          cd Python-3.10.16\PCbuild
+          build.bat -p x64 -c Release
+        shell: cmd
+      
+      - name: Package Build
+        run: |
+          cd Python-3.10.16\PCbuild\amd64
+          tar -czf python-3.10.16-windows-x64.tar.gz *
+        shell: bash
+      
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-windows-build
+          path: Python-3.10.16/PCbuild/amd64/python-3.10.16-windows-x64.tar.gz
