@@ -36,7 +36,7 @@ jobs:
         shell: bash
       
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: python-windows-build
           path: Python-3.10.16/PCbuild/amd64/python-3.10.16-windows-x64.tar.gz
